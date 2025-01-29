@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+}
+
+/* Invoice Header */
+.invoice-title h2 {
+    color: #0056b3; /* Blue accent color for branding */
+    margin-bottom: 55px;
+    font-size: 22px;
+}
+
+.invoice-title h4 {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: right;
+}
+
+/* Company Information */
+.text-muted {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.text-muted h5 {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+/* Table Styling */
+.table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.table .text-end {
+    text-align: right;
+}
+
+/* Highlight the Total Row */
+.table tbody tr:last-child {
+    font-weight: bold;
+    background-color: #e9ecef;
+}
+
+/* Container and Layout */
+.container {
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    font-size: 10px;
+    color: #888;
+    margin-top: 20px;
+}
