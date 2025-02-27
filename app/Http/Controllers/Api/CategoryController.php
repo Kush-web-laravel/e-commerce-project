@@ -13,9 +13,7 @@ class CategoryController extends Controller
     //
     public function categoryList(Request $request)
     {
-        $id = $request->query('id');
-        // Fetch the category with subcategories
-        $category = Category::find($id);
+        $category = Category::all();
 
         if (!$category) {
             return response()->json([
@@ -24,11 +22,14 @@ class CategoryController extends Controller
                 'category' => []
             ]);
         }else{
-            $category->image_url = url($category->image);
-            $category->image = basename($category->image);
+            foreach ($category as $cat) {
+                $cat->image_url = url($cat->image);
+                $cat->image = basename($cat->image);
 
-            $subcategories = SubCategory::where('category_id', $id)->count();
-            $products = Product::where('category_id', $id)->count();
+                $subcategories = SubCategory::where('category_id', $cat->id)->count();
+                $products = Product::where('category_id', $cat->id)->count();
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Category and Sub Category found',
@@ -36,6 +37,7 @@ class CategoryController extends Controller
                 'subcategories' => 'Category has '.$subcategories.' subcategories',
                 'products' => 'Category has '.$products.' products'
             ]);
+            
         }
       
     }

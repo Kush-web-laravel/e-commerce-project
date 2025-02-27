@@ -9,6 +9,8 @@ use App\Models\Orders;
 use App\Models\OrderProduct;
 use App\Models\OrderStatusHistory;
 use App\Models\Product;
+use App\Models\User;
+use Mpdf\Mpdf;
 
 class OrdersController extends Controller
 {
@@ -66,39 +68,57 @@ class OrdersController extends Controller
     public function orderDetails()
     {
         $userId = auth()->user()->id;
-        $order = Orders::where('user_id', $userId)->first();
-        $orderProducts = OrderProduct::where('order_id', $order->id)->get();
-        //dd($orderProducts);
-        $productId = OrderProduct::where('order_id', $order->id)->pluck('product_id');
-        $productNames = Product::whereIn('id', $productId)->pluck('name', 'id')->toArray();
+        $orders = Orders::where('user_id', $userId)->get();
+      
+        $productDetails = [];
     
-        // Collect product prices and quantities
-        $productPrices = [];
-        $productQuantities = [];
-        foreach ($orderProducts as $orderProduct) {
-            $productPrices[$orderProduct->product_id] = $orderProduct->price;
-            $productQuantities[$orderProduct->product_id] = $orderProduct->quantity;
+        foreach($orders as $order){
+            $products = OrderProduct::where('order_id', $order->id)
+                ->join('products', 'order_products.product_id', '=', 'products.id')
+                ->select('order_products.*', 'products.name', 'products.image')
+                ->get();
+    
+            foreach ($products as $product) {
+                $product->image_url = url('images/' . $product->image);
+                $product->image_name = basename($product->image);
+                unset($product->image); // Remove the image field
+            }
+    
+            $productDetails[] = $products;
         }
-    
-        $productDetails = [
-            'productNames' => $productNames,
-            'productPrices' => $productPrices,
-            'productQuantities' => $productQuantities
-        ];
     
         return response()->json([
             'status' => 'success',
-            'order' => $order,
-            'productDetails' => $productDetails
+            'order' => $orders,
+            'productDetails' => $productDetails,
         ]);
     }
 
     public function showInvoice(Request $request)
     {
-        $order = Orders::all();
-        return view('admin.orders.invoice', compact('order'));
-    }
+        $id = $request->query('id');
+        $order = Orders::where('id', $id)->first();
+        $userId = Orders::where('id', $id)->pluck('user_id');
+        $user = User::where('id', $userId)->first();
+        
+        $invoiceNumber = Orders::generateInvoiceNumber();
+        $randomData = Orders::generateRandomData();
 
+        $order = Orders::find($order->id);
+        $orderProducts = OrderProduct::where('order_id', $order->id)->get();
+        $products = Product::whereIn('id', $orderProducts->pluck('product_id'))->get()->keyBy('id');
+        
+        $html = view('admin.orders.invoice', compact('order', 'invoiceNumber', 'randomData', 'user', 'orderProducts', 'products'))->render();
+        $mpdf = new Mpdf(['format' => 'A4']);
 
-    
+        // Write the HTML content to the PDF
+        $mpdf->WriteHTML($html);
+
+        // Output the PDF as a string
+        $pdfContent = $mpdf->Output('', 'S');
+
+        return response($pdfContent)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="invoice.pdf"');
+    } 
 }

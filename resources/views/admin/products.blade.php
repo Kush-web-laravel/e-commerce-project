@@ -15,7 +15,7 @@
             </div><!-- /.col -->
         </div><!-- /.row -->
         <div class="add-subAdmin col-sm-2 float-right mr-2">
-            <a href="{{ route('addProducts-view') }}" class="btn btn-primary btn-block"><i class="fa fa-plus mr-2"></i>Add Products</a>
+            <a href="{{ route('addProduct-view') }}" class="btn btn-primary btn-block"><i class="fa fa-plus mr-2"></i>Add Products</a>
         </div>
     </div><!-- /.container-fluid -->
 </div>

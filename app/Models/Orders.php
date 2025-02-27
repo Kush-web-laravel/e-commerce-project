@@ -13,7 +13,7 @@ class Orders extends Model
     use SoftDeletes;
 
     protected $fillable = [
-       'user_id', 'order_number', 'order_status' ,'total_amount', 'order_on', 'order_description'
+       'user_id', 'order_number', 'order_status' ,'total_amount', 'order_on', 'order_description', 'delivery_slip'
     ];
 
     protected $dates =['deleted_at'];

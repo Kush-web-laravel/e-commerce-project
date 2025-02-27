@@ -16,24 +16,25 @@ class ProductsController extends Controller
     public function productList(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
+            'categoryId' => 'required|integer',
             'subcategoryId' => 'required|integer',
-            'productId' => 'required|integer'
         ]);
+
+        $id = $request->query('categoryId');
+        //dd( $id);
+        $subcategoryId = $request->query('subcategoryId');
 
         if($validator->fails()){
             return response()->json([
                 'status' => 'error',
-                'message' => 'Category id, subcategory id and product id is required',
+                'message' => 'Category id, subcategory id is required',
                 'products' => []
             ]);
         }else{
-            $id = $request->query('id');
-            $subcategoryId = $request->query('subcategoryId');
-            $productId = request()->query('productId');
-
+            
             if($id){
-                $subCategory = SubCategory::find($subcategoryId);
+                $category = Category::where('id', $id)->first();
+                $subCategory = SubCategory::where('category_id', $id)->get();
                 if (!$subCategory) {
                     return response()->json([
                         'status' => 'error',
@@ -41,41 +42,19 @@ class ProductsController extends Controller
                         'subCategory' => []
                     ]);
                 }else{
-                    if($subCategory->category_id != $id){
-                        return response()->json([
-                            'status' => 'error',
-                            'message' => 'Sub Category not found in this category',
-                            'subCategory' => []
-                        ]);
-                    }else{
-                        $products = Product::find($productId);
+                    foreach( $subCategory as $subCat){
+                        $products = Product::where('sub_category_id', $subcategoryId)->get();
                         if (!$products) {
-                                return response()->json([
-                                    'status' => 'error',
-                                    'message' => 'Product not found',
-                                    'products' => []
-                                ]);
+                            return response()->json([
+                                'status' => 'error',
+                                'message' => 'Product not found',
+                                'products' => []
+                            ]);
                         }else{
-                            if($products->sub_category_id != $subcategoryId){
-                                return response()->json([
-                                    'status' => 'error',
-                                    'message' => 'Product not found in this subcategory',
-                                    'products' => []
-                                ]);
-                            }else{
-                                if($products->deleted_at == null){
-                                    $category = Category::find($id);
-                                    $subCategory = SubCategory::find($subcategoryId);
-                                    
-                                    $products->image_url = url($products->image);
-                                    $products->image = basename($products->image);
-                                    return response()->json([
-                                        'status' => 'success',
-                                        'message' => 'Product found',
-                                        'products' => $products,
-                                        'subcategory' => $subCategory->name,
-                                        'category' => $category->name
-                                    ]);
+                            foreach( $products as $product){
+                                if($product->deleted_at == null){
+                                    $product->image_url = url($product->image);
+                                    $product->image = basename($product->image);
                                 }else{
                                     return response()->json([
                                         'status' => 'error',
@@ -84,10 +63,16 @@ class ProductsController extends Controller
                                     ]);
                                 }
                             }
-                            
+                            return response()->json([
+                                'status' => 'success',
+                                'message' => 'Product found',
+                                'products' => $products,
+                                'subcategory' => $subCat->name,
+                                'category' => $category->name
+                            ]);
                         }
-                    }
-                
+                    }   
+
                 }
             }else{
                 return response()->json([

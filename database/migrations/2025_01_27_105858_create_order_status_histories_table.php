@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('order_status_histories', function (Blueprint $table) {
             $table->id();
             $table->string('order_number', 255); // Ensure the length matches the orders table
-            $table->enum('order_status', ['pending', 'accepted', 'dispatched', 'delivered', 'cancelled']);
+            $table->enum('order_status', ['pending', 'accepted', 'order_rejected', 'dispatched', 'delivered', 'cancelled']);
             $table->string('status_updated_on');
             $table->softDeletes();
             $table->timestamps();

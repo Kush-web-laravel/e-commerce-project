@@ -6,6 +6,10 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\InstagramController;
+use App\Http\Controllers\PhoneCheckController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,7 +19,26 @@ Route::get('login', [LoginController::class, 'login'])->name('login-view');
 Route::post('login', [LoginController::class, 'adminLogin'])->name('login');
 Route::get('forgotPassword', [LoginController::class, 'forgotPasswordView'])->name('forgotPassword-view');
 Route::post('forgotPassword', [LoginController::class, 'forgotPassword'])->name('forgotPassword');
+Route::get('instagram', [InstagramController::class, 'showData'])->name('instagramData');
+// Route::get('phone-auth', function(){
+//     return view('phone-auth');
+// });
+Route::get('phone-auth', function(){
+    return view('phone-auth-2');
+});
+// Route::post('/setToken', function (Request $request) {
+//     // Validate request data
+//     $request->validate([
+//         'id' => 'required',
+//         'userId' => 'required',
+//         'email' => 'required'
+//     ]);
 
+//     // Fake authentication logic
+//     return response()->json(['access' => true]);
+// })->name('setToken');
+// Route::post('/validate-phone', [PhoneCheckController::class, 'validatePhone'])->name('validate.phone');
+// Route::get('/phone-auth', [PhoneCheckController::class, 'showPhoneAuthForm'])->name('phone.auth');
 Route::middleware('auth:admin')->group(function(){
     Route::get('dashboard', [LoginController::class, 'dashboard'])->name('dashboard-view');
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
@@ -64,7 +87,12 @@ Route::middleware('auth:admin')->group(function(){
     Route::prefix('orders')->group(function(){
         Route::get('/', [OrdersController::class, 'index'])->name('orders-view');
         Route::get('order-details/{id}', [OrdersController::class, 'orderDetails'])->name('orderDetails');
-        Route::post('order-status', [OrdersController::class, 'changeOrderStatus'])->name('changeOrderStatus');
+        Route::post('order-status/{id}', [OrdersController::class, 'changeOrderStatus'])->name('changeOrderStatus');
         Route::get('invoice/{id}', [OrdersController::class, 'showInvoice'])->name('invoice');
+        Route::get('detailsForStatusModal/{id}', [OrdersController::class, 'detailsForStatusModal'])->name('detailsForStatusModal');
+        Route::post('/attach-delivery-slip', [OrdersController::class, 'attachDeliverySlip'])->name('attachSlip');
+
     });
+
+    
 });

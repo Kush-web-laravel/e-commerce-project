@@ -15,11 +15,10 @@ class OrdersController extends Controller
     //
     public function index()
     {
-        $userId = auth()->user()->id;
-        $orders = Orders::where('user_id', $userId)->get();
-        //dd($orders);
-        $user = auth()->user();
-        return view('admin.orders', compact('orders', 'user'));
+        $orders = Orders::join('users', 'orders.user_id', '=', 'users.id')
+                        ->select('orders.*', 'users.name as user_name')
+                        ->get();
+        return view('admin.orders', compact('orders'));
     }
 
     public function orderDetails($id)
@@ -33,9 +32,13 @@ class OrdersController extends Controller
         return view('admin.orders.view', compact('orders', 'orderProducts', 'productName', 'productImage'));
     }
 
-    public function changeOrderStatus(Request $request)
+    public function changeOrderStatus(Request $request, $id)
     {
-        $order = Orders::where('id', $request->order_id)->first();
+        $request->validate([
+            'order_status' => 'required|in:pending,accepted,order_rejected,dispatched,delivered,cancelled',
+        ]);
+        $order = Orders::where('id', $id)->first();
+        //dd($id,$order);
         $orderNumber = $order->order_number;
         $order->update([
             'order_status' => $request->order_status
@@ -51,6 +54,17 @@ class OrdersController extends Controller
             'status' => 'success',
             'message' => 'Order status updated successfully',
             'redirect_url' => route('orders-view')
+        ]);
+    }
+
+    public function detailsForStatusModal($id)
+    {
+        $order = Orders::find($id);
+        $user = User::find($order->user_id);
+
+        return response()->json([
+            'order' => $order,
+            'user' => $user,
         ]);
     }
 
@@ -80,5 +94,32 @@ class OrdersController extends Controller
                 ->header('Content-Type', 'application/pdf')
                 ->header('Content-Disposition', 'inline; filename="invoice.pdf"');
     }
+    public function attachDeliverySlip(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|exists:orders,id',
+            'delivery_slip' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+    
+        $order = Orders::find($request->input('order_id'));
+    
+        if ($request->hasFile('delivery_slip')) {
+            $slip = $request->file('delivery_slip');
+            $slipName = time() . '.' . $slip->getClientOriginalExtension();
+            $slipPath = public_path('images/orders/delivery_slip/' . $order->id);
+    
+            $slip->move($slipPath, $slipName);
+    
+            // Update the order with the delivery slip path
+            $order->update(['delivery_slip' => 'images/orders/delivery_slip/' . $order->id . '/' . $slipName]);
+        }
+    
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Delivery slip attached successfully',
+            'redirect_url' => route('orders-view')
+        ]);
+    }
+    
 
 }
