@@ -39,9 +39,10 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const instagramAccountId = "17841472641049018"; // Replace with your Instagram Business ID
-            const accessToken = "EAANduOgtv9MBO5O6WL9HhMtH1IfkHiafqrbhoUXENWZAPpDWDMesuKFooPOHqg9HGunkSLufmmQtZBmJA5DGRx1MxCVu3WuxksooI2Q7m7V3SnBiSn8OburHdZAr1wP9l04eZAALUmjtWH0SKo8ZAeAbURyYS3lIJQkPcZAdSkhmBdFiAi1D0HGoqrhYSziyJClQZDZD"; // Replace with your actual token
-
+            // const instagramAccountId = "17841472641049018"; // Replace with your Instagram Business ID
+            const instagramAccountId = "17841460957003839";
+            // const accessToken = "EAANduOgtv9MBO5O6WL9HhMtH1IfkHiafqrbhoUXENWZAPpDWDMesuKFooPOHqg9HGunkSLufmmQtZBmJA5DGRx1MxCVu3WuxksooI2Q7m7V3SnBiSn8OburHdZAr1wP9l04eZAALUmjtWH0SKo8ZAeAbURyYS3lIJQkPcZAdSkhmBdFiAi1D0HGoqrhYSziyJClQZDZD"; // Replace with your actual token
+            const accessToken = "EAAZAW2jZCtZBtwBO8ar8uSszZCku0oAzk7eIIOAxxhuyPSQfigI1nIQ4G3pTsSJt62o7dzk3CWzcWErdbXQI7sy8ovfIw8eUU7ajNHQv2DobmZAQDrreyX8r9IWP8F0buQZBhTPXf5emZBoYN6oPqxAd1zZCCCZAlD6U3ffhLhKd1JGZBq0gfBR0UuqUZBAN4Rp3DyeLs1mgcTNpvODLgIfE9T4tJyr";
             const apiUrl = `https://graph.facebook.com/v22.0/${instagramAccountId}/media?fields=id,caption,media_type,media_url,permalink&access_token=${accessToken}`;
 
             fetch(apiUrl)

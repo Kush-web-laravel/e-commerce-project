@@ -20,6 +20,9 @@ Route::post('login', [LoginController::class, 'adminLogin'])->name('login');
 Route::get('forgotPassword', [LoginController::class, 'forgotPasswordView'])->name('forgotPassword-view');
 Route::post('forgotPassword', [LoginController::class, 'forgotPassword'])->name('forgotPassword');
 Route::get('instagram', [InstagramController::class, 'showData'])->name('instagramData');
+Route::get('chatbot', function(){
+    return view('chatbot');
+});
 // Route::get('phone-auth', function(){
 //     return view('phone-auth');
 // });
